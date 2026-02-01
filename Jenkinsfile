@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "pranavparalkar21/merged-doc" // lowercase is safer
-        IMAGE_TAG = "1.0.0"
+        IMAGE_TAG = "3.0.0"
     }
 
     stages {
@@ -16,7 +16,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'docker-demo', url: 'https://github.com/PranavParalkar/jenkins-demo.git'
+                git branch: 'main', url: 'https://github.com/PranavParalkar/jenkins-demo.git'
             }
         }
 
