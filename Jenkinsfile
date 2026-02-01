@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "pranavparalkar21/merged-docker" // lowercase is safer
+        IMAGE_NAME = "pranavparalkar21/merged-doc" // lowercase is safer
         IMAGE_TAG = "1.0.0"
     }
 
