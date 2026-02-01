@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "pranavparalkar21/merged-doc"
-        IMAGE_TAG  = "3.0.0"
+        IMAGE_TAG  = "4.0.0"
         DOCKER_BUILDKIT = "0"
     }
 
@@ -24,9 +24,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat """
-                docker build -t %IMAGE_NAME%:%IMAGE_TAG% .
-                """
+                sh '''
+                docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                '''
             }
         }
 
@@ -37,18 +37,18 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    bat """
-                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
-                    """
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
                 }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                bat """
-                docker push %IMAGE_NAME%:%IMAGE_TAG%
-                """
+                sh '''
+                docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
             }
         }
     }
