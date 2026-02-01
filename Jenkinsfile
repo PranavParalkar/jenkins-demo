@@ -2,47 +2,63 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "pranavparalkar21/merged-doc" // lowercase is safer
-        IMAGE_TAG = "3.0.0"
+        IMAGE_NAME = "pranavparalkar21/merged-doc"
+        IMAGE_TAG  = "3.0.0"
+        DOCKER_BUILDKIT = "0"
     }
 
     stages {
 
-        stage('Try') {
+        stage('Start') {
             steps {
-                echo "hello i have started"
+                echo "🚀 Pipeline started"
             }
         }
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/PranavParalkar/jenkins-demo.git'
+                git branch: 'main',
+                    url: 'https://github.com/PranavParalkar/jenkins-demo.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    echo "Building Docker image..."
-                    def customImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
-                    env.IMAGE_ID = customImage.id
+                bat """
+                docker build -t %IMAGE_NAME%:%IMAGE_TAG% .
+                """
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'pranav',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat """
+                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                    """
                 }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'pranav') {
-                        docker.image("${IMAGE_NAME}:${IMAGE_TAG}").push()
-                    }
-                }
+                bat """
+                docker push %IMAGE_NAME%:%IMAGE_TAG%
+                """
             }
         }
     }
 
     post {
-        success { echo "Docker image successfully built and pushed 🚀" }
-        failure { echo "Pipeline failed ❌" }
+        success {
+            echo "✅ Docker image built & pushed successfully 🚀"
+        }
+        failure {
+            echo "❌ Pipeline failed"
+        }
     }
 }
