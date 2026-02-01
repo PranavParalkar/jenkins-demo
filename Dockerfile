@@ -2,10 +2,10 @@
 FROM node:18-alpine AS frontend-builder
 WORKDIR /frontend
 
-COPY src/frontend/package.json src/frontend/package-lock.json ./
+COPY frontend/package.json frontend/package-lock.json ./
 RUN npm install
 
-COPY src/frontend .
+COPY frontend .
 RUN npm run build
 
 
@@ -13,10 +13,10 @@ RUN npm run build
 FROM maven:3.9-eclipse-temurin-17 AS backend-builder
 WORKDIR /app
 
-COPY pom.xml .
+COPY backend/pom.xml .
 RUN mvn -B dependency:go-offline
 
-COPY src ./src
+COPY backend/src ./src
 
 # Copy React build into Spring Boot static folder
 COPY --from=frontend-builder /frontend/dist ./src/main/resources/static
