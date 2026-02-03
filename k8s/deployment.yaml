@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamesta
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gamesta
+  template:
+    metadata:
+      labels:
+        app: gamesta
+    spec:
+      containers:
+      - name: gamesta
+        image: pranavparalkar21/merge_doc:latest
+        ports:
+          - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: gamesta-config
